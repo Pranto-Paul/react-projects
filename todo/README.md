@@ -100,6 +100,34 @@ useEffect(() => {
     The second useEffect runs first and immediately writes the (initially empty) todos state to localStorage, overwriting any existing stored todos with an empty array.
     When the first useEffect runs after that, it retrieves the empty array just stored, so the original todos are lost.
 
+### Why does the demo todo not appear in the TodoItem list?
+---
+```
+export const TodoContext = createContext({
+    todos: [
+        {
+            id: 1,
+            todo: "This is a todo",
+            isCompleted: false,
+        },
+    ],
+    addTodo: (todo) => {},
+    updateTodo: (id, todo) => {},
+    deleteTodo: (id) => {},
+    toggleComplete: (id) => {},
+});
+```
+
+#### Reason:
+
+- Demo **todos** in **createContext** is not part of the actual state:
+  - The **todos** array in **createContext** is just the default value for the *context* and is never actually used because you provide a value to the **TodoProvider** in App.jsx:
+
+```
+<TodoProvider value={{ todos, addTodo, updateTodo, deleteTodo, toggleComplete }}>
+```
+- The **todos** value from **useState** in App.jsx overrides the default **context value**.
+
 ## License
 
 This project is licensed under the MIT License.
