@@ -1,4 +1,3 @@
-
 # Todo Management Application
 
 This project is a simple Todo management application that allows users to add, update, delete, and toggle the completion status of their tasks. It leverages local storage to persist data and uses the Context API for state management across components.
@@ -55,6 +54,51 @@ To run the project locally, follow these steps:
 - **Vite**: A fast build tool for modern web projects.
 - **Tailwind CSS**: A utility-first CSS framework for styling.
 - **ESLint**: A tool for identifying and fixing code issues.
+
+## ⚠️Some Issues
+
+### Why does interchanging the positions of useEffect hooks not work?
+
+---
+
+#### Working
+
+```
+useEffect(() => {
+    const todos = JSON.parse(localStorage.getItem("todos"));
+    if (todos && todos.length > 0) setTodos(todos);
+    console.log(todos);
+}, []);
+
+useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+    console.log(todos);
+}, [todos]);
+```
+
+#### Not Working
+
+```
+useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+    console.log(todos);
+}, [todos]);
+
+useEffect(() => {
+    const todos = JSON.parse(localStorage.getItem("todos"));
+    if (todos && todos.length > 0) setTodos(todos);
+    console.log(todos);
+}, []);
+
+```
+
+### Reason:
+
+- **Initialization Issue:**
+  - In the working order, the first useEffect initializes the todos state from localStorage on component mount ([] dependency). This ensures that setTodos is called with the stored values before any updates occur.
+  - When the order is interchanged:
+    The second useEffect runs first and immediately writes the (initially empty) todos state to localStorage, overwriting any existing stored todos with an empty array.
+    When the first useEffect runs after that, it retrieves the empty array just stored, so the original todos are lost.
 
 ## License
 
