@@ -1,19 +1,35 @@
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import appName from "../constant";
-
+import { auth } from "../firebase";
+import { signInWithEmailAndPassword ,createUserWithEmailAndPassword} from "firebase/auth";
+import {toast} from 'react-toastify'
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email,setEmail]   = useState("")
   const [password,setPassword] = useState("")
+  const [isLogin,setisLogin] = useState(true)
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    console.log("Form submitted");
-    // Add your login logic here
+    try{
+      if(!isLogin){
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        toast.success("Successfully signup ")
+        setisLogin((prev)=>!prev)
+      }
+      else{
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        toast.success("Successfully logged in")
+      }
+    }
+    catch(err){
+      console.log(err.code)
+      console.log(err.message)
+    }
   };
 
   return (
@@ -25,7 +41,7 @@ const Login = () => {
         <form onSubmit={handleSubmit} className="w-full flex flex-col items-center gap-4">
           {/* Email Field */}
           <div className="w-3/4">
-            <label className="text-lg mb-2" htmlFor="email">Email</label>
+            <label className="text-lg mb-2 shadow-md" htmlFor="email">Email</label>
             <input
               className="w-full py-2 px-2 rounded-md bg-slate-500 outline-none"
               type="email"
@@ -39,7 +55,7 @@ const Login = () => {
 
           {/* Password Field */}
           <div className="w-3/4 relative">
-            <label className="text-lg mb-2" htmlFor="password">Password</label>
+            <label className="text-lg mb-2 shadow-md" htmlFor="password">Password</label>
             <div className="relative">
               <input
                 className="w-full py-2 px-2 rounded-md bg-slate-500 outline-none"
@@ -65,8 +81,12 @@ const Login = () => {
             type="submit"
             className="w-3/4 py-2 px-4 bg-orange-500 hover:bg-orange-600 rounded-md text-white font-bold"
           >
-            LogIn
+            {isLogin ? "Login" : "Signup"}
           </button>
+          <a className="cursor-pointer underline shadow-md" onClick={(e)=>{
+            e.preventDefault()
+            setisLogin((prev)=>!prev)
+          }}>Click here to {isLogin ? "signup" : "login"}</a>
         </form>
       </div>
     </div>
