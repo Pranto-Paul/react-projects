@@ -27,8 +27,7 @@ const Login = () => {
       }
     }
     catch(err){
-      console.log(err.code)
-      console.log(err.message)
+      toast.error(err.code)
     }
   };
 
